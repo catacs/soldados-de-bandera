@@ -110,7 +110,7 @@ public class Node {
 		dCostTot = dCostHeu + dCostAct;
 	}
 	
-	public boolean NodeEqualByPosition(Node m_b)
+	public boolean NodeEqualByPos(Node m_b)
 	{
 		boolean breturn = true;
 		
@@ -130,11 +130,16 @@ public class Node {
 		return breturn;
 	}
 	
+	public double absoluteDouble(double dx)
+	{
+		if( dx < 0) return -dx;
+		else return dx;
+	}
 	
 	public Node CloneNode(double dx, double dz, Vector3D m_Dest)
 	{
 		// Le das un nodo y te suma a x y z lo que le des
-		Node m_devolver = new Node(this.getdPosActx()+dx, this.getdPosActz()+dz, this.getCostAct()+dx +dz);
+		Node m_devolver = new Node(this.getdPosActx()+dx, this.getdPosActz()+dz, this.getCostAct()+ absoluteDouble(dx) + absoluteDouble(dz));
 		m_devolver.set_HeuristicaConPosActual(m_Dest);
 		m_devolver.setAntecesor(this);
 		m_devolver.setState(NodeState.Path);
@@ -154,7 +159,7 @@ public class Node {
 		return -1;
 	}
 	
-	public ArrayList <Node> generateSuccesor(Node Dest, CTerrainMap m_Mapa)
+	public ArrayList <Node> generateSuccesor(Node Dest, CTerrainMap m_Mapa, double dStep)
 	{
 		ArrayList <Node> m_Succesors = new ArrayList <Node>();
 		
@@ -162,21 +167,19 @@ public class Node {
 		m_Objective.x = Dest.dPosActx;
 		m_Objective.z = Dest.dPosActz;
 		
-		
-		// Arriba -> coger Z y sumarle 8
-	    Node m_Arriba = this.CloneNode(0.0f, 8.0f, m_Objective);
+	    Node m_Arriba = this.CloneNode(0.0f, dStep, m_Objective);
 	    if(m_Mapa.CanWalk((int) (m_Arriba.getdPosActx()/8), (int) (m_Arriba.getdPosActz()/8)))
 	    	m_Succesors.add(m_Arriba);
-		// Abajo -> Restarle a Z 8
-	    Node m_Abajo = this.CloneNode(0.0f, -8.0f, m_Objective);
+		
+	    Node m_Abajo = this.CloneNode(0.0f, -dStep, m_Objective);
 	    if(m_Mapa.CanWalk((int) (m_Abajo.getdPosActx()/8), (int) (m_Abajo.getdPosActz()/8)))
 	    	m_Succesors.add(m_Abajo);
-		// Izquierda -> Restarle a x 8
-	    Node m_Izquierda = this.CloneNode(8.0f, 0.0f, m_Objective);
+		
+	    Node m_Izquierda = this.CloneNode(dStep, 0.0f, m_Objective);
 	    if(m_Mapa.CanWalk((int) (m_Izquierda.getdPosActx()/8), (int) (m_Izquierda.getdPosActz()/8)))
 	    	m_Succesors.add(m_Izquierda);
-		//Derecha -> Sumarle a x 8
-	    Node m_Derecha = this.CloneNode(-8.0f, 0.0f, m_Objective);
+		
+	    Node m_Derecha = this.CloneNode(-dStep, 0.0f, m_Objective);
 	    if(m_Mapa.CanWalk((int) (m_Derecha.getdPosActx()/8), (int) (m_Derecha.getdPosActz()/8)))
 	    	m_Succesors.add(m_Derecha);
 		

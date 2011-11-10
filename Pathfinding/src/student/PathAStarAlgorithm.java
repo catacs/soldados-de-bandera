@@ -11,23 +11,19 @@ import es.upv.dsic.gti_ia.jgomas.Vector3D;
 public class PathAStarAlgorithm extends PathFinder {
 	
 	private CTerrainMap m_Map=null;
-
-
+	
+	
+	
 	@Override
 	public void setMap(CTerrainMap map) {
 		this.m_Map=map;
 		
 	}
-
 	@Override
 	public Vector3D[] getPath(Vector3D source, Vector3D target) {
-		System.out.println("He llegado a calcPath");
-		
-		
+		double dStep = 8.0;
 		Node m_Goal = new Node(target.x, target.z, 0.0f, 0.0f);
 		m_Goal.setState(NodeState.End);
-		m_Goal.ShowNode();
-		
 		Node m_Start = new Node(source.x, source.z, 0.0f);
 		m_Start.setState(NodeState.Start);
 		m_Start.set_Heuristica(source,target);
@@ -39,8 +35,7 @@ public class PathAStarAlgorithm extends PathFinder {
 		
 		while (!m_open.isEmpty())
 		{
-			int iPosCurrent = getLowestCost(m_open);
-			if (iPosCurrent < 0) break;
+			int iPosCurrent = getLowestCostAct(m_open);
 			Node m_Current = m_open.get(iPosCurrent);
 			m_open.remove(iPosCurrent);
 			
@@ -49,9 +44,6 @@ public class PathAStarAlgorithm extends PathFinder {
 				m_Closed.add(m_Current);
 				m_Goal.setAntecesor(m_Current);
 				m_Closed.add(m_Goal);
-				
-				
-				
 				
 				/**********Una vez completo todo calculo el camino con los nodos************/
 				
@@ -74,33 +66,26 @@ public class PathAStarAlgorithm extends PathFinder {
 				}
 				
 				Vector3D[] m_AStarPath = new Vector3D[path.size()];
-				
-				System.out.println("Se ha creado el vector m_AStarPath de tamano:  " + iPath);
-				
+							
 				int iPos = path.size()-1;	
 				int iP=0;
 				while(iPos >= 0 )
 				{
 					m_AStarPath[iP] = path.get(iPos);
 					iP++;
-					System.out.println("X: " + path.get(iPos).x + " Z: " + path.get(iPos).z);
 					iPos -= 1;
 				}
 				
 				
 				/*********************/
-				return m_AStarPath;
-				
-				
-				
+				return m_AStarPath;			
 			}
 			else
 			{
-				ArrayList <Node> m_Succesors = m_Current.generateSuccesor(m_Goal, m_Map);
+				ArrayList <Node> m_Succesors = m_Current.generateSuccesor(m_Goal, m_Map, dStep);
 				
 				while(!m_Succesors.isEmpty())
 				{
-					
 					Node m_Succesor = m_Succesors.get(0);
 					m_Succesors.remove(0);
 					
@@ -114,31 +99,28 @@ public class PathAStarAlgorithm extends PathFinder {
 							m_Succesor = null;
 						}
 					}
-					else // No se encuentra en open
-					{
-						if(iPosSucClosed >= 0) 
+					
+					if(iPosSucClosed >= 0) 
 						{
 							if((m_Closed.get(iPosSucClosed).getCostAct() <= m_Succesor.getCostAct())) // En closed)
 							{
 								m_Succesor = null;
 							}
-						}
-						else // No se encuentra en Open ni en Closed o su coste actual es menor que el contenido en dichas listas
-						{
-							if(iPosSucOp >= 0) m_open.remove(iPosSucOp);
-							if(iPosSucClosed >= 0) m_Closed.remove(iPosSucClosed);
-							m_open.add(m_Succesor);
-						}
+					}
+					if(m_Succesor != null)
+					{
+						if(iPosSucOp >= 0) m_open.remove(iPosSucOp);
+						if(iPosSucClosed >= 0) m_Closed.remove(iPosSucClosed);
+						m_open.add(m_Succesor);
 					}
 				}
 			} // Ya se han analizado todos los sucesores
 			m_Closed.add(m_Current);
 		}
 	return null;
+}
 	
-	}
-	
-	private int getLowestCost(ArrayList<Node> m_list)
+	private int getLowestCostTot(ArrayList<Node> m_list)
 	{
 		if (m_list.isEmpty())
 			return -1;
@@ -156,5 +138,26 @@ public class PathAStarAlgorithm extends PathFinder {
 		}
 		return pos;
 	}
-
+	
+	private int getLowestCostAct(ArrayList<Node> m_list)
+	{
+		if (m_list.isEmpty())
+			return -1;
+		
+		Node m_menor = m_list.get(0);
+		int pos = 0;
+		
+		for(int i = 1; i < m_list.size(); i++ )
+		{
+			if(m_menor.getCostAct() > m_list.get(i).getCostAct())
+			{
+				m_menor = m_list.get(i);
+				pos = i;
+			}
+		}
+		return pos;
+	}
+	
 }
+
+

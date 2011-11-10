@@ -45,7 +45,7 @@ public class MyMedic extends CMedic {
 			
 			@Override
 			public void action() {
-				m_PathFinder=new  PathDijkstra();
+				m_PathFinder=new  PathAStarAlgorithm();
 				//new PathAStarAlgorithm();
 				m_PathFinder.setMap(m_Map);
 				
