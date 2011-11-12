@@ -159,6 +159,19 @@ public class Node {
 		return -1;
 	}
 	
+	public int searchNodeInArrayListByPos(ArrayList <Node> m_List)
+	{
+		for(int iPos = 0; iPos < m_List.size(); iPos++)
+		{
+			if(this.NodeEqualByPos(m_List.get(iPos)))
+			{
+				return iPos;
+			}
+		}
+		
+		return -1;
+	}
+	
 	public ArrayList <Node> generateSuccesor(Node Dest, CTerrainMap m_Mapa, double dStep)
 	{
 		ArrayList <Node> m_Succesors = new ArrayList <Node>();
