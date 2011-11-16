@@ -15,8 +15,8 @@ public class EuclideanDistanceHeuristic extends Heuristic {
 	public double calcHeuristicByRefinedNode(RefinedNode m_Start, RefinedNode m_Dest)
 	{
 		double distance = 0.0;
-		distance += Math.abs(m_Dest.getdPosActx() - m_Start.getdPosActx());
-		distance += Math.abs(m_Dest.getdPosActz() - m_Start.getdPosActz());
+		distance += Math.abs(m_Dest.getiPosActx() - m_Start.getiPosActx());
+		distance += Math.abs(m_Dest.getiPosActz() - m_Start.getiPosActz());
 		return distance;
 	}	
 }

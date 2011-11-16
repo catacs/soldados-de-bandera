@@ -32,7 +32,7 @@ public class RefinedNodeArrayList {
 	public void addWithV3DHeu(RefinedNode e, Vector3D goal)
 	{
 		Vector3D eNode = new Vector3D();
-		eNode.x=e.getdPosActx(); eNode.y=0.0; eNode.z=e.getdPosActz(); 
+		eNode.x=e.getiPosActx(); eNode.y=0.0; eNode.z=e.getiPosActz(); 
 		e.setdCostHeu(m_Heuristic.calcHeuristicByVector3D(eNode, goal));
 		e.autoSetCostTot(); m_List.add(e);
 	}	

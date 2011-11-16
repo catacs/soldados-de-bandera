@@ -1,6 +1,6 @@
 package student;
 
-
+import refinedastaralgorithm.*;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.OneShotBehaviour;
@@ -45,7 +45,7 @@ public class MyMedic extends CMedic {
 			
 			@Override
 			public void action() {
-				m_PathFinder=new  PathAStarAlgorithm();
+				m_PathFinder=new  RefinedPathAStarAlgorithm();
 				//new PathAStarAlgorithm();
 				m_PathFinder.setMap(m_Map);
 				

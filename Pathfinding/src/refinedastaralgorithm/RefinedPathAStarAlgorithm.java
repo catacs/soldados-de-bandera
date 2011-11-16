@@ -19,15 +19,16 @@ public class RefinedPathAStarAlgorithm extends PathFinder {
 	
 	@Override
 	public Vector3D[] getPath(Vector3D source, Vector3D target) {
-		double dRefined = 0.5;
+		int dRefined = 1;
+		int dDiagonalStep = 4;
 		boolean bFindBestPath = false;
 		boolean bFindFinalNode = false;
 		int iPosFinalNode = -1;
 		
-		RefinedNode m_Goal = new RefinedNode(target.x, target.z, 0.0f);
+		RefinedNode m_Goal = new RefinedNode((int)target.x,(int) target.z);
 		m_Goal.setState(NodeState.End);
 		
-		RefinedNode m_Start = new RefinedNode(source.x, source.z, 0.0f);
+		RefinedNode m_Start = new RefinedNode((int)source.x, (int)source.z, 0);
 		m_Start.setState(NodeState.Start);
 		RefinedNodeArrayList m_Open = new RefinedNodeArrayList();
 		m_Open.addWithRNHeu(m_Start, m_Goal);
@@ -42,9 +43,9 @@ public class RefinedPathAStarAlgorithm extends PathFinder {
 			{
 				m_Closed.add(m_Current);
 				
-				double dDifx =  Math.abs(m_Current.getdPosActx() - m_Goal.getdPosActx());
-				double dDifz =  Math.abs(m_Current.getdPosActz() - m_Goal.getdPosActz());
-				m_Goal.setdCostAct(m_Current.getdCostAct()+dDifx + dDifz);
+				int dDifx =  Math.abs(m_Current.getiPosActx() - m_Goal.getiPosActx());
+				int dDifz =  Math.abs(m_Current.getiPosActz() - m_Goal.getiPosActz());
+				m_Goal.setdCostAct(m_Current.getdCostAct()+ Math.sqrt(dDifx*dDifx + dDifz*dDifz));
 				m_Goal.setdCostHeu(0.0);
 				m_Goal.autoSetCostTot();
 				m_Goal.setAntecesor(m_Current);
@@ -52,16 +53,16 @@ public class RefinedPathAStarAlgorithm extends PathFinder {
 				
 				bFindFinalNode = true;
 				if(iPosFinalNode == -1) iPosFinalNode = m_Closed.size()-1; 
-				else if(m_Closed.get(iPosFinalNode).getdCostTot() > m_Goal.getdCostTot())
+				else if(m_Closed.get(iPosFinalNode).getdCostTot() >= m_Goal.getdCostTot())
 					iPosFinalNode = m_Closed.size()-1;
 				
-				if(m_Open.getLowestCostTot() > m_Goal.getdCostTot())
+				if(m_Open.getLowestCostTot() >= m_Goal.getdCostTot())
 					bFindBestPath = true;
 				// punto de terminacion del algoritmo
 			}
 			else
 			{
-				RefinedNodeArrayList m_Succesors = m_Current.generateRefinedSuccesor(m_Goal, m_Map, dRefined);
+				RefinedNodeArrayList m_Succesors = m_Current.generateRefinedSuccesor(m_Map, dRefined, dDiagonalStep);
 				while(m_Succesors.hasElement())
 				{
 					RefinedNode m_Succesor = m_Succesors.get(0);
@@ -88,19 +89,24 @@ public class RefinedPathAStarAlgorithm extends PathFinder {
 			} // Ya se han analizado todos los sucesores
 			m_Closed.add(m_Current);
 		}
-		if(bFindFinalNode) return calcularPath(m_Closed.get(iPosFinalNode));
+		if(bFindFinalNode) return calcularPath(m_Closed.get(iPosFinalNode), target);
 		else return null;
 	}
 	
-	public Vector3D[] calcularPath(RefinedNode m_Goal)
+	public Vector3D[] calcularPath(RefinedNode m_Goal, Vector3D m_Target)
 	{
 		RefinedNode m_Actual = m_Goal;
 		ArrayList<Vector3D> path = new ArrayList<Vector3D>();
+		
+		path.add(new Vector3D(m_Target.x, m_Map.GetTargetY() ,m_Target.y));	
+		m_Actual = m_Actual.getAntecesor();
+		
 		while(m_Actual.getState() != NodeState.Start)
 		{
-			path.add(new Vector3D(m_Actual.getdPosActx(), m_Map.GetTargetY() ,m_Actual.getdPosActz()));	
+			path.add(new Vector3D(m_Actual.getiPosActx(), m_Map.GetTargetY() ,m_Actual.getiPosActz()));	
 			m_Actual = m_Actual.getAntecesor();
 		}
+		
 		Vector3D[] m_AStarPath = new Vector3D[path.size()];		
 		int iPos = path.size()-1;	
 		int iP=0;
