@@ -55,7 +55,7 @@ public class RefinedNodeArrayList {
 	
 	public int getPosLowestCostTot()
 	{
-		if (m_List.isEmpty()) return -1;
+		if (m_List.isEmpty()) {System.out.println("La lista esta vacia"); return -1;}
 		
 		RefinedNode m_Menor = m_List.get(0);
 		int pos = 0;

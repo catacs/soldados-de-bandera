@@ -20,52 +20,35 @@ public class RefinedPathAStarAlgorithm extends PathFinder {
 	@Override
 	public Vector3D[] getPath(Vector3D source, Vector3D target) {
 		int dRefined = 1;
-		int dDiagonalStep = 4;
+		int dDiagonalStep = 2;
 		
 		boolean bFindBestPath = false;
-		boolean bFindFinalNode = false;
-		int iPosFinalNode = -1;
 		
 		RefinedNode m_Goal = new RefinedNode((int)target.x,(int) target.z);
 		m_Goal.setState(NodeState.End);
 		
-		RefinedNode m_Start = new RefinedNode((int)source.x, (int)source.z, 0);
+		RefinedNode m_Start;
+		
+		m_Start = new RefinedNode((int)source.x, (int)source.z);
+		
+		m_Start.setdCostAct(0);
 		m_Start.setState(NodeState.Start);
 		RefinedNodeArrayList m_Open = new RefinedNodeArrayList();
 		m_Open.addWithRNHeu(m_Start, m_Goal);
-		int iPosicionOpenLowerCostTot = 0;
-		double dMinimoCosteTot = m_Open.get(iPosicionOpenLowerCostTot).getdCostTot();
-		
+	
 		RefinedNodeArrayList m_Closed = new RefinedNodeArrayList();
 		
 		while (m_Open.hasElement() && !bFindBestPath)
 		{
-			// Mejora: En vez de recorrer siempre todo el vector de nodos abiertos, 
-			// almeacenar la posicion del minimo ( Asi evitamos busquedas cuando 
-			// hay muchos nodos abiertos)
-			
 			int iPosCurrent = m_Open.getPosLowestCostTot();
 			RefinedNode m_Current = m_Open.get(iPosCurrent);
 			m_Open.remove(iPosCurrent);
 			if(m_Current.NodeEqualByCostMap(m_Goal))
 			{
+				//Encuentra el camino hasta el cuadrado de coste final.
 				m_Closed.add(m_Current);
-				
-				int dDifx =  Math.abs(m_Current.getiPosActx() - m_Goal.getiPosActx());
-				int dDifz =  Math.abs(m_Current.getiPosActz() - m_Goal.getiPosActz());
-				m_Goal.setdCostAct(m_Current.getdCostAct()+ Math.sqrt(dDifx*dDifx + dDifz*dDifz));
-				m_Goal.setdCostHeu(0.0);
-				m_Goal.autoSetCostTot();
-				m_Goal.setAntecesor(m_Current);
-				m_Closed.add(m_Goal);
-				
-				bFindFinalNode = true;
-				if(iPosFinalNode == -1) iPosFinalNode = m_Closed.size()-1; 
-				else if(m_Closed.get(iPosFinalNode).getdCostTot() >= m_Goal.getdCostTot())
-					iPosFinalNode = m_Closed.size()-1;
-				
-				if(m_Open.getLowestCostTot() >= m_Goal.getdCostTot())
-					bFindBestPath = true;
+				bFindBestPath = true;
+				System.out.println("Encontrado el camino optimo");
 				// punto de terminacion del algoritmo
 			}
 			else
@@ -73,6 +56,7 @@ public class RefinedPathAStarAlgorithm extends PathFinder {
 				RefinedNodeArrayList m_Succesors = m_Current.generateRefinedSuccesor(m_Map, dRefined, dDiagonalStep);
 				while(m_Succesors.hasElement())
 				{
+					
 					RefinedNode m_Succesor = m_Succesors.get(0);
 					m_Succesors.remove(0);
 					
@@ -83,7 +67,7 @@ public class RefinedPathAStarAlgorithm extends PathFinder {
 						if((m_Open.get(iPosSucOp).getdCostAct() <= m_Succesor.getdCostAct()) )
 							m_Succesor = null;
 					
-					if(iPosSucClosed >= 0) 
+					if(iPosSucClosed >= 0 && m_Succesor != null) 
 						if((m_Closed.get(iPosSucClosed).getdCostAct() <= m_Succesor.getdCostAct())) // En closed)
 							m_Succesor = null;
 							
@@ -97,12 +81,14 @@ public class RefinedPathAStarAlgorithm extends PathFinder {
 			} // Ya se han analizado todos los sucesores
 			m_Closed.add(m_Current);
 		}
-		if(bFindFinalNode) return calcularPath(m_Closed.get(iPosFinalNode), target);
-		else return null;
+		if(bFindBestPath){ return calcularPath(m_Closed.get(m_Closed.size()-1), target, (int)source.x, (int)source.z); }
+		else {return null;}
 	}
 	
-	public Vector3D[] calcularPath(RefinedNode m_Goal, Vector3D m_Target)
+	public Vector3D[] calcularPath(RefinedNode m_Goal, Vector3D m_Target, int iSx, int iSz)
 	{
+		System.out.println("Calculamos el camino:");
+		
 		RefinedNode m_Actual = m_Goal;
 		ArrayList<Vector3D> path = new ArrayList<Vector3D>();
 		
@@ -115,6 +101,8 @@ public class RefinedPathAStarAlgorithm extends PathFinder {
 			m_Actual = m_Actual.getAntecesor();
 		}
 		
+		path.add(new Vector3D(iSx, m_Map.GetTargetY() ,iSz));
+		
 		Vector3D[] m_AStarPath = new Vector3D[path.size()];		
 		int iPos = path.size()-1;	
 		int iP=0;
@@ -124,6 +112,7 @@ public class RefinedPathAStarAlgorithm extends PathFinder {
 			iP++;
 			iPos -= 1;
 		}
+		System.out.println("Tamano: " + m_AStarPath.length);
 		return m_AStarPath;
 	}
 	

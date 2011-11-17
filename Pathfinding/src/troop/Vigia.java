@@ -299,10 +299,7 @@ public class Vigia extends CSoldier {
 				}
 			}
 			break;
-		
-		case CLASSVigia:
-			
-			
+				
 		case CLASS_ENGINEER:
 		case CLASS_NONE:
 		default:
