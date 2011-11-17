@@ -1,8 +1,6 @@
 package student;
 
-import refinedastaralgorithm.*;
 import jade.core.AID;
-import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -11,26 +9,19 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.ArrayList;
 import java.util.Iterator;
 
-import es.upv.dsic.gti_ia.jgomas.CMedic;
+import refinedastaralgorithm.RefinedPathAStarAlgorithm;
+import es.upv.dsic.gti_ia.jgomas.CFieldOps;
 import es.upv.dsic.gti_ia.jgomas.CPack;
 import es.upv.dsic.gti_ia.jgomas.CSight;
-import es.upv.dsic.gti_ia.jgomas.CSoldier;
 import es.upv.dsic.gti_ia.jgomas.CTask;
 import es.upv.dsic.gti_ia.jgomas.Vector3D;
 
-public class MyMedic extends CMedic {
+public class MyFieldOps extends CFieldOps {
 	
-	private static final long serialVersionUID = 1L;
 	private PathFinder m_PathFinder;
-
+	
 	protected void setup() {
 		
 		super.setup();
@@ -221,8 +212,8 @@ public class MyMedic extends CMedic {
 	protected void SetUpPriorities() {
 		
 		m_TaskPriority[CTask.TASK_NONE] = 0;
-		m_TaskPriority[CTask.TASK_GIVE_MEDICPAKS] = 2000;
-		m_TaskPriority[CTask.TASK_GIVE_AMMOPACKS] = 0;
+		m_TaskPriority[CTask.TASK_GIVE_MEDICPAKS] = 0;
+		m_TaskPriority[CTask.TASK_GIVE_AMMOPACKS] = 2000;
 		m_TaskPriority[CTask.TASK_GIVE_BACKUP] = 0;
 		m_TaskPriority[CTask.TASK_GET_OBJECTIVE] = 1000;
 		m_TaskPriority[CTask.TASK_ATTACK] = 1000;
@@ -282,27 +273,19 @@ public class MyMedic extends CMedic {
 	 * 
 	 */
 	protected boolean GeneratePath() {
-		
-		//CalculatePath(PATH_DIJKSTRA8D);
-		
 		m_AStarPath=m_PathFinder.getPath(m_Movement.getPosition(), m_Movement.getDestination());
-		//m_iAStarPathIndex=1;
 		m_iAStarPathIndex=0;
 		
 		if (CheckStaticPosition(m_AStarPath[m_iAStarPathIndex].x,m_AStarPath[m_iAStarPathIndex].z) == true)
 		{
-				
 				String sNewPosition = " ( " + m_AStarPath[m_iAStarPathIndex].x + " , "
 											+ m_AStarPath[m_iAStarPathIndex].y + " , "
 											+ m_AStarPath[m_iAStarPathIndex].z + " ) ";
 				
 				AddTask(CTask.TASK_WALKING_PATH, getAID(), sNewPosition);
 				return true;
-			
-		
 		}
 		return false;
-		
 	}
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -448,27 +431,29 @@ public class MyMedic extends CMedic {
 
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Methods to overload inhereted from CMedic class
+	// Methods to overload inhereted from CFieldOps class
 	//
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
 	/**
-	 * Decides if agent accepts the CFM request 
+	 * Decides if agent accepts the CAA request 
 	 * 
-	 * This method is a decision function invoked when a CALL FOR MEDIC request has arrived.
-	 * Parameter <tt> sContent</tt> is the content of message received in <tt> CFM</tt> responder behaviour as
-	 * result of a <tt> CallForMedic</tt> request, so it must be: <tt> ( x , y , z ) ( health ) </tt>.
-	 * By default, the return value is <tt> TRUE</tt>, so agents always accept all CFM requests.
-	 *   
+	 * Decides if agent accepts the CFA request. This method is a decision function
+	 * invoked when a CALL FOR AMMO request has arrived. Parameter sContent is the
+	 * content of message received in CFA responder behaviour as result of a CallForAmmo 
+	 * request, so it must be: ( x , y , z ) ( ammo ) . By default, the return value is 
+	 * TRUE, so agents always accept all CFA requests. 
+	 * 
 	 * <em> It's very useful to overload this method. </em>
 	 *   
 	 * @param _sContent
 	 * @return <tt> TRUE</tt> 
 	 * 
 	 */
-	protected boolean checkMedicAction(String _sContent) {
-		// We always go to help
-		return ( true );
+	
+	protected boolean checkAmmoAction(String _sContent)
+	{
+		return true;
 	}
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
 	
@@ -491,13 +476,13 @@ public class MyMedic extends CMedic {
 		case CTask.TASK_NONE:
 			break;
 			
-		case CTask.TASK_GIVE_MEDICPAKS:
+		case CTask.TASK_GIVE_AMMOPACKS:
 			int iPacks = _CurrentTask.getPacksDelivered();
 			super.PerformTargetReached(_CurrentTask);
 			if ( iPacks != _CurrentTask.getPacksDelivered() )
-				System.out.println(getLocalName()+ ": Medic has left " + (_CurrentTask.getPacksDelivered() - iPacks) + " Medic Packs");
+				System.out.println(getLocalName()+ ": Medic has left " + (_CurrentTask.getPacksDelivered() - iPacks) + " Ammo Packs");
 			else
-				System.out.println(getLocalName()+ ": Medic cannot leave Medic Packs");
+				System.out.println(getLocalName()+ ": Don't share ammo");
 			break;
 			
 		default:
@@ -507,11 +492,8 @@ public class MyMedic extends CMedic {
 	}
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	// End of Methods to overload inhereted from CMedic class
+	// End of Methods to overload inhereted from CFieldOps class
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 }
-
-
-
