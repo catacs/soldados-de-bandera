@@ -10,7 +10,7 @@ public class RefinedNodeArrayList {
 
 	/*PRIVATE VARIABLES*/
 	private ArrayList <RefinedNode> m_List = new ArrayList <RefinedNode>();
-	private Heuristic m_Heuristic = new EuclideanDistanceHeuristic();
+	private Heuristic m_Heuristic = new ManhattanDistance();
 	
 	
 	/*PUBLIC METHODS FROM ARRAYLIST*/

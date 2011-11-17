@@ -186,6 +186,7 @@ public class RefinedNode {
 	    iNSectorz = m_AbaDer.getiPosActz()>>3;
 	    iVSectorx = iNSectorx - iSectorx;
 	    iVSectorz = iNSectorz - iSectorz;
+	    
 	    if(m_Mapa.CanWalk(iNSectorx, iNSectorz))
 	    {
 	    	if(iVSectorx == 0)

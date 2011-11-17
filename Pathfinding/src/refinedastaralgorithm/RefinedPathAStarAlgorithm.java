@@ -21,6 +21,7 @@ public class RefinedPathAStarAlgorithm extends PathFinder {
 	public Vector3D[] getPath(Vector3D source, Vector3D target) {
 		int dRefined = 1;
 		int dDiagonalStep = 4;
+		
 		boolean bFindBestPath = false;
 		boolean bFindFinalNode = false;
 		int iPosFinalNode = -1;
@@ -32,10 +33,17 @@ public class RefinedPathAStarAlgorithm extends PathFinder {
 		m_Start.setState(NodeState.Start);
 		RefinedNodeArrayList m_Open = new RefinedNodeArrayList();
 		m_Open.addWithRNHeu(m_Start, m_Goal);
+		int iPosicionOpenLowerCostTot = 0;
+		double dMinimoCosteTot = m_Open.get(iPosicionOpenLowerCostTot).getdCostTot();
+		
 		RefinedNodeArrayList m_Closed = new RefinedNodeArrayList();
 		
 		while (m_Open.hasElement() && !bFindBestPath)
 		{
+			// Mejora: En vez de recorrer siempre todo el vector de nodos abiertos, 
+			// almeacenar la posicion del minimo ( Asi evitamos busquedas cuando 
+			// hay muchos nodos abiertos)
+			
 			int iPosCurrent = m_Open.getPosLowestCostTot();
 			RefinedNode m_Current = m_Open.get(iPosCurrent);
 			m_Open.remove(iPosCurrent);
