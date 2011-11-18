@@ -17,20 +17,34 @@ public class RefinedPathAStarAlgorithm extends PathFinder {
 		this.m_Map=map;	
 	}
 	
+	private int getSign(int iNum)
+	{
+		if(iNum < 0) return -1;
+		if(iNum > 0) return 1;
+		return 0;
+	}
+	
 	@Override
 	public Vector3D[] getPath(Vector3D source, Vector3D target) {
 		int dRefined = 1;
 		int dDiagonalStep = 2;
-		
 		boolean bFindBestPath = false;
 		
 		RefinedNode m_Goal = new RefinedNode((int)target.x,(int) target.z);
 		m_Goal.setState(NodeState.End);
+				
+		int iDireccionx = getSign((int) (target.x - source.x));
+		int iDireccionz = getSign((int) (target.z - source.z));
 		
 		RefinedNode m_Start;
 		
-		m_Start = new RefinedNode((int)source.x, (int)source.z);
-		
+		if(m_Map.CanWalk(((int)source.x)>>3,((int)source.z)>>3))
+			m_Start = new RefinedNode((int)source.x, (int)source.z);
+		else if(m_Map.CanWalk((((int)source.x) - iDireccionx )>>3,(((int)source.z) - iDireccionz)>>3))
+			m_Start = new RefinedNode(((int)source.x)-iDireccionx, ((int)source.z) - iDireccionz);
+		else m_Start = new RefinedNode(((int)source.x)-iDireccionx*2, ((int)source.z) - iDireccionz*2);
+		//Sabiendo el origen y destino sabes de donde vienes, sería recuperar la posicion
+		//anterior válida mas cercana
 		m_Start.setdCostAct(0);
 		m_Start.setState(NodeState.Start);
 		RefinedNodeArrayList m_Open = new RefinedNodeArrayList();
@@ -46,6 +60,7 @@ public class RefinedPathAStarAlgorithm extends PathFinder {
 			if(m_Current.NodeEqualByCostMap(m_Goal))
 			{
 				//Encuentra el camino hasta el cuadrado de coste final.
+				
 				m_Closed.add(m_Current);
 				bFindBestPath = true;
 				System.out.println("Encontrado el camino optimo");
@@ -81,7 +96,7 @@ public class RefinedPathAStarAlgorithm extends PathFinder {
 			} // Ya se han analizado todos los sucesores
 			m_Closed.add(m_Current);
 		}
-		if(bFindBestPath){ return calcularPath(m_Closed.get(m_Closed.size()-1), target, (int)source.x, (int)source.z); }
+		if(bFindBestPath){ return calcularPath(m_Closed.get(m_Closed.size()-1), target, m_Start.getiPosActx(), m_Start.getiPosActz()); }
 		else {return null;}
 	}
 	
@@ -89,11 +104,11 @@ public class RefinedPathAStarAlgorithm extends PathFinder {
 	{
 		System.out.println("Calculamos el camino:");
 		
-		RefinedNode m_Actual = m_Goal;
 		ArrayList<Vector3D> path = new ArrayList<Vector3D>();
+		// Esto es necesario porque solo se llega al la misma casilla de coste
+		//path.add(new Vector3D(m_Target.x, m_Map.GetTargetY() ,m_Target.y));
 		
-		path.add(new Vector3D(m_Target.x, m_Map.GetTargetY() ,m_Target.y));	
-		m_Actual = m_Actual.getAntecesor();
+		RefinedNode m_Actual = m_Goal;
 		
 		while(m_Actual.getState() != NodeState.Start)
 		{
@@ -101,6 +116,7 @@ public class RefinedPathAStarAlgorithm extends PathFinder {
 			m_Actual = m_Actual.getAntecesor();
 		}
 		
+		//Esto se añade porque es necesario ( Da errores al empezar a andar).
 		path.add(new Vector3D(iSx, m_Map.GetTargetY() ,iSz));
 		
 		Vector3D[] m_AStarPath = new Vector3D[path.size()];		
