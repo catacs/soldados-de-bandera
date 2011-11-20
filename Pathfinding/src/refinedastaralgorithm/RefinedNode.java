@@ -143,83 +143,49 @@ public class RefinedNode {
 	    	m_Succesors.add(m_Derecha);
 	    
 	    //Sucesores diagonales
-  /*
-	    RefinedNode m_ArrIzq = this.CloneNodeDiag(-dDiagStep,-dDiagStep);
-	    int iNSectorx = (m_ArrIzq.getiPosActx())>>3;
-	    int iNSectorz = (m_ArrIzq.getiPosActz())>>3;
-	    int iVSectorx = iNSectorx - iSectorx;
-	    int iVSectorz = iNSectorz - iSectorz;
-	    boolean bAdd2 = false;
-	    if(m_Mapa.CanWalk(iNSectorx, iNSectorz))
-	    {
-	    	if(iVSectorx == 0)
-	    	{
-	    		if(iVSectorz == 0) bAdd2 = true; // es el mismo sector
-	    		else if(m_Mapa.CanWalk(iSectorx, iSectorz-1)) bAdd2 = true;
-	    	}
-	    	else if(iVSectorz == 0 && m_Mapa.CanWalk(iSectorx-1, iSectorz))
-	    		bAdd2 = true;
-	    	else if(m_Mapa.CanWalk(iSectorx, iSectorz-1) && m_Mapa.CanWalk(iSectorx-1, iSectorz)) bAdd2 = true;
-	    }
-	    if(bAdd2) m_Succesors.add(m_ArrIzq);
-	  
-	    RefinedNode m_ArrDer = this.CloneNodeDiag(dDiagStep,-dDiagStep);
-	    iNSectorx = (m_ArrDer.getiPosActx())>>3;
-	    iNSectorz = (m_ArrDer.getiPosActz())>>3;
-	    iVSectorx = iNSectorx - iSectorx;
-	    iVSectorz = iNSectorz - iSectorz;
-	    bAdd2 = false;
-	    if(m_Mapa.CanWalk(iNSectorx, iNSectorz))
-	    {
-	    	if(iVSectorx == 0)
-	    	{
-	    		if(iVSectorz == 0) bAdd2 = true;
-	    		else if(m_Mapa.CanWalk(iSectorx, iSectorz-1)) bAdd2 = true;
-	    	}
-	    	else if(iVSectorz == 0 && m_Mapa.CanWalk(iSectorx+1, iSectorz)) bAdd2 = true;
-	    	else if(m_Mapa.CanWalk(iSectorx, iSectorz-1) && m_Mapa.CanWalk(iSectorx+1, iSectorz)) bAdd2 = true;
-	    }
-	    if(bAdd2) m_Succesors.add(m_ArrDer);
+  
+	    RefinedNode m_ArrIzq = this.CloneNodeDiag((iSectorx<<3) - getiPosActx() - iRefined, (iSectorz<<3) - getiPosActz() - iRefined );
+	    boolean bAdd = false;
+	    
+	    if(m_Mapa.CanWalk((m_ArrIzq.getiPosActx())>>3, (m_ArrIzq.getiPosActz())>>3))
+	    	if(m_Mapa.CanWalk(((m_ArrIzq.getiPosActx())>>3)+1, (m_ArrIzq.getiPosActz())>>3))
+	    		if(m_Mapa.CanWalk((m_ArrIzq.getiPosActx())>>3, ((m_ArrIzq.getiPosActz())>>3)+1))
+	    			if(m_Mapa.CanWalk(((m_ArrIzq.getiPosActx())>>3)+1, ((m_ArrIzq.getiPosActz())>>3)+1))
+		    			bAdd = true;
+	    if(bAdd) m_Succesors.add(m_ArrIzq);
+	
+	    RefinedNode m_ArrDer = this.CloneNodeDiag(((iSectorx+1)<<3) - getiPosActx() + iRefined,(iSectorz<<3) - getiPosActz() - iRefined);
+	    bAdd = false;
+	    if(m_Mapa.CanWalk((m_ArrDer.getiPosActx())>>3, (m_ArrDer.getiPosActz())>>3))
+	    	if(m_Mapa.CanWalk(((m_ArrDer.getiPosActx())>>3)-1, (m_ArrDer.getiPosActz())>>3))
+	    		if(m_Mapa.CanWalk((m_ArrDer.getiPosActx())>>3, ((m_ArrDer.getiPosActz())>>3)+1))
+	    			if(m_Mapa.CanWalk(((m_ArrDer.getiPosActx())>>3)-1, ((m_ArrDer.getiPosActz())>>3)+1))
+	    			bAdd = true;
+	    
+	    if(bAdd) m_Succesors.add(m_ArrDer);
 
-	    bAdd2 = false;
-	    RefinedNode m_AbaDer = this.CloneNodeDiag(dDiagStep,dDiagStep);
-	    iNSectorx = (m_AbaDer.getiPosActx())>>3;
-	    iNSectorz = (m_AbaDer.getiPosActz())>>3;
-	    iVSectorx = iNSectorx - iSectorx;
-	    iVSectorz = iNSectorz - iSectorz;
-	    
-	    if(m_Mapa.CanWalk(iNSectorx, iNSectorz))
-	    {
-	    	if(iVSectorx == 0)
-	    	{
-	    		if(iVSectorz == 0) bAdd2 = true;
-	    		else if(m_Mapa.CanWalk(iSectorx, iSectorz+1)) bAdd2 = true;
-	    	}
-	    	else if(iVSectorz == 0 && m_Mapa.CanWalk(iSectorx+1, iSectorz)) bAdd2 = true;
-	    	else if(m_Mapa.CanWalk(iSectorx, iSectorz+1) && m_Mapa.CanWalk(iSectorx+1, iSectorz)) bAdd2 = true;
-	    }
-	    if(bAdd2) m_Succesors.add(m_AbaDer);
+	    bAdd = false;
+	    RefinedNode m_AbaDer = this.CloneNodeDiag(((iSectorx+1)<<3) - getiPosActx() + iRefined,((iSectorz+1)<<3) -getiPosActz() + iRefined);
+	    if(m_Mapa.CanWalk((m_AbaDer.getiPosActx())>>3, (m_AbaDer.getiPosActz())>>3))
+	    	if(m_Mapa.CanWalk(((m_AbaDer.getiPosActx())>>3)-1, (m_AbaDer.getiPosActz())>>3))
+	    		if(m_Mapa.CanWalk((m_AbaDer.getiPosActx())>>3, ((m_AbaDer.getiPosActz())>>3)-1))
+	    			if(m_Mapa.CanWalk(((m_AbaDer.getiPosActx())>>3)-1, ((m_AbaDer.getiPosActz())>>3)-1))
+	    			bAdd = true;
+	    if(bAdd) m_Succesors.add(m_AbaDer);
 
-	    
-	    
-	    bAdd2 = false;
-	    RefinedNode m_AbaIzq = this.CloneNodeDiag(-dDiagStep,dDiagStep);
-	    iNSectorx = (m_AbaIzq.getiPosActx())>>3;
-	    iNSectorz = (m_AbaIzq.getiPosActz())>>3;
-	    iVSectorx = iNSectorx - iSectorx;
-	    iVSectorz = iNSectorz - iSectorz;
-	    if(m_Mapa.CanWalk(iNSectorx, iNSectorz))
-	    {
-	    	if(iVSectorx == 0)
-	    	{
-	    		if(iVSectorz == 0) bAdd2 = true;
-	    		else if(m_Mapa.CanWalk(iSectorx, iSectorz+1)) bAdd2 = true;
-	    	}
-	    	else if(iVSectorz == 0 && m_Mapa.CanWalk(iSectorx-1, iSectorz)) bAdd2 = true;
-	    	else if(m_Mapa.CanWalk(iSectorx, iSectorz+1) && m_Mapa.CanWalk(iSectorx-1, iSectorz)) bAdd2 = true;
-	    	
-	    }
-	    if(bAdd2) m_Succesors.add(m_AbaIzq);
+	    bAdd = false;
+	    RefinedNode m_AbaIzq = this.CloneNodeDiag((iSectorx<<3) - getiPosActx() - iRefined,((iSectorz+1)<<3) - getiPosActz() + iRefined);
+	    if(m_Mapa.CanWalk((m_AbaIzq.getiPosActx())>>3, (m_AbaIzq.getiPosActz())>>3))
+	    	if(m_Mapa.CanWalk((m_AbaIzq.getiPosActx())>>3, ((m_AbaIzq.getiPosActz())>>3)-1))
+	    		if(m_Mapa.CanWalk(((m_AbaIzq.getiPosActx())>>3)+1, (m_AbaIzq.getiPosActz())>>3))
+	    			if(m_Mapa.CanWalk(((m_AbaIzq.getiPosActx())>>3)+1, ((m_AbaIzq.getiPosActz())>>3)-1))
+	    			bAdd = true;
+	    if(bAdd) m_Succesors.add(m_AbaIzq);
+	    /*
+	    m_AbaDer.ShowRefinedNode();
+	    m_AbaIzq.ShowRefinedNode();
+	    m_ArrIzq.ShowRefinedNode();
+	    m_ArrDer.ShowRefinedNode();
 	    */
 		return m_Succesors;
 	}
