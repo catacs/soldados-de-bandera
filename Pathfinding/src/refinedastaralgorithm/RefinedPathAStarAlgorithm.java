@@ -63,7 +63,6 @@ public class RefinedPathAStarAlgorithm extends PathFinder {
 				
 				m_Closed.add(m_Current);
 				bFindBestPath = true;
-				System.out.println("Encontrado el camino optimo");
 				// punto de terminacion del algoritmo
 			}
 			else
@@ -101,9 +100,7 @@ public class RefinedPathAStarAlgorithm extends PathFinder {
 	}
 	
 	public Vector3D[] calcularPath(RefinedNode m_Goal, Vector3D m_Target, int iSx, int iSz)
-	{
-		System.out.println("Calculamos el camino:");
-		
+	{	
 		ArrayList<Vector3D> path = new ArrayList<Vector3D>();
 		// Esto es necesario porque solo se llega al la misma casilla de coste
 		//path.add(new Vector3D(m_Target.x, m_Map.GetTargetY() ,m_Target.y));
@@ -128,7 +125,6 @@ public class RefinedPathAStarAlgorithm extends PathFinder {
 			iP++;
 			iPos -= 1;
 		}
-		System.out.println("Tamano: " + m_AStarPath.length);
 		return m_AStarPath;
 	}
 	

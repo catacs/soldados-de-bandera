@@ -182,6 +182,8 @@ public class MyMedic extends CMedic {
 	protected boolean ShouldUpdateTargets() 
 	{ 
 		
+		//for(int i = 0; i < )
+		
 		return false; 
 		
 	
@@ -317,40 +319,7 @@ public class MyMedic extends CMedic {
 	 *   
 	 */
 	protected void CreateControlPoints() {
-
-		int iMaxCP = 0;
-		
-		switch ( m_eClass ) {
-		case CLASS_MEDIC:
-		case CLASS_FIELDOPS:
 			super.CreateControlPoints();
-			break;
-			
-		case CLASS_SOLDIER:
-			iMaxCP = (int) (Math.random() * 5) + 5;
-			m_ControlPoints = new Vector3D [iMaxCP];
-			for (int i = 0; i < iMaxCP; i++ ) {
-				Vector3D ControlPoints = new Vector3D();
-				while (true) {
-			
-					double x = m_Map.GetTargetX() + (25 - (Math.random() * 50));
-					double z = m_Map.GetTargetZ() + (25 - (Math.random() * 50));
-
-					if ( CheckStaticPosition(x, z) == true ) {
-						ControlPoints.x = x;
-						ControlPoints.z = z;
-						m_ControlPoints[i] = ControlPoints;
-						break;
-					}
-				}
-			}
-			break;
-			
-		case CLASS_ENGINEER:
-		case CLASS_NONE:
-		default:
-			break;
-		}
 	}
 	/////////////////////////////////////////////////////////////////////////////////////////////////////
 
