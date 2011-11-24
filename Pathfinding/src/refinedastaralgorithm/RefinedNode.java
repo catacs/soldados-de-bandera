@@ -152,6 +152,7 @@ public class RefinedNode {
 	    		if(m_Mapa.CanWalk((m_ArrIzq.getiPosActx())>>3, ((m_ArrIzq.getiPosActz())>>3)+1))
 	    			if(m_Mapa.CanWalk(((m_ArrIzq.getiPosActx())>>3)+1, ((m_ArrIzq.getiPosActz())>>3)+1))
 		    			bAdd = true;
+	    
 	    if(bAdd) m_Succesors.add(m_ArrIzq);
 	
 	    RefinedNode m_ArrDer = this.CloneNodeDiag(((iSectorx+1)<<3) - getiPosActx() + iRefined,(iSectorz<<3) - getiPosActz() - iRefined);
@@ -181,12 +182,7 @@ public class RefinedNode {
 	    			if(m_Mapa.CanWalk(((m_AbaIzq.getiPosActx())>>3)+1, ((m_AbaIzq.getiPosActz())>>3)-1))
 	    			bAdd = true;
 	    if(bAdd) m_Succesors.add(m_AbaIzq);
-	    /*
-	    m_AbaDer.ShowRefinedNode();
-	    m_AbaIzq.ShowRefinedNode();
-	    m_ArrIzq.ShowRefinedNode();
-	    m_ArrDer.ShowRefinedNode();
-	    */
+	 
 		return m_Succesors;
 	}
 	public void ShowRefinedNode(){System.out.println("X: " + this.iPosActx + " Z: " + this.iPosActz);}
